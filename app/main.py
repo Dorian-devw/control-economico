@@ -86,6 +86,16 @@ def get_summary(year: int, month: int, db: Session = Depends(get_db)):
     return crud.monthly_summary(db, year, month)
 
 
+@app.get("/alerts/budgets", response_model=list[schemas.BudgetAlert])
+def get_budget_alerts(year: int, month: int, db: Session = Depends(get_db)):
+    return crud.get_budget_alerts(db, year, month)
+
+
+@app.get("/audit-logs", response_model=list[schemas.AuditLogOut])
+def get_audit_logs(limit: int = 50, db: Session = Depends(get_db)):
+    return crud.list_audit_logs(db, limit=limit)
+
+
 @app.post("/reports/monthly")
 def generate_monthly_report(year: int, month: int, db: Session = Depends(get_db)):
     report_file = export_monthly_report(db, year, month)
