@@ -78,6 +78,13 @@ def create_savings_goal(db: Session, goal: schemas.SavingsGoalCreate):
     db.add(model)
     db.commit()
     db.refresh(model)
+    create_audit_log(
+        db,
+        action="create",
+        entity="savings_goal",
+        entity_id=model.id,
+        detail=f"Meta creada: {model.name}",
+    )
     return model
 
 
