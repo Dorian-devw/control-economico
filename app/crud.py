@@ -31,6 +31,13 @@ def create_movement(db: Session, movement: schemas.MovementCreate):
     db.add(model)
     db.commit()
     db.refresh(model)
+    create_audit_log(
+        db,
+        action="create",
+        entity="movement",
+        entity_id=model.id,
+        detail=json.dumps(movement.model_dump(), ensure_ascii=True, default=str),
+    )
     return model
 
 
