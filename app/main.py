@@ -42,6 +42,12 @@ def create_movement(movement: schemas.MovementCreate, db: Session = Depends(get_
             status_code=400,
             detail="El tipo del movimiento no coincide con la categoria",
         )
+    duplicate = crud.find_duplicate_movement(db, movement)
+    if duplicate:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Movimiento duplicado detectado (id={duplicate.id})",
+        )
     return crud.create_movement(db, movement)
 
 
