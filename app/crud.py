@@ -200,3 +200,11 @@ def create_audit_log(
     db.refresh(model)
     return model
 
+
+def list_audit_logs(db: Session, limit: int = 50):
+    return (
+        db.query(models.AuditLog)
+        .order_by(models.AuditLog.created_at.desc())
+        .limit(limit)
+        .all()
+    )
