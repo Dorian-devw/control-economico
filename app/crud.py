@@ -55,6 +55,13 @@ def create_budget(db: Session, budget: schemas.BudgetCreate):
     db.add(model)
     db.commit()
     db.refresh(model)
+    create_audit_log(
+        db,
+        action="create",
+        entity="budget",
+        entity_id=model.id,
+        detail=f"Presupuesto {budget.year}-{budget.month:02} categoria={budget.category_id}",
+    )
     return model
 
 
