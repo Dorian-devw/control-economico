@@ -6,6 +6,9 @@ Backend base para:
 - presupuestos
 - metas de ahorro
 - reporte mensual a Excel con graficos
+- anti-duplicados de movimientos
+- alertas de presupuesto (80% y 100%)
+- bitacora de auditoria
 
 ## 1) Instalacion
 
@@ -58,4 +61,6 @@ Se crea en `exports/reporte_YYYY_MM.xlsx`.
 - `POST /savings-goals`
 - `GET /savings-goals`
 - `GET /summary?year=2026&month=4`
+- `GET /alerts/budgets?year=2026&month=4`
+- `GET /audit-logs?limit=50`
 - `POST /reports/monthly?year=2026&month=4`
