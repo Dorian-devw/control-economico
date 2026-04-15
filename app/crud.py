@@ -1,4 +1,5 @@
 from datetime import date
+import json
 
 from sqlalchemy import extract, func
 from sqlalchemy.orm import Session
@@ -11,6 +12,13 @@ def create_category(db: Session, category: schemas.CategoryCreate):
     db.add(model)
     db.commit()
     db.refresh(model)
+    create_audit_log(
+        db,
+        action="create",
+        entity="category",
+        entity_id=model.id,
+        detail=f"Categoria creada: {model.name}",
+    )
     return model
 
 
