@@ -137,3 +137,48 @@ def find_duplicate_movement(db: Session, movement: schemas.MovementCreate):
         )
         .first()
     )
+
+
+def get_budget_alerts(db: Session, year: int, month: int):
+    rows = (
+        db.query(
+            models.Budget.category_id,
+            models.Category.name.label("category_name"),
+            models.Budget.limit_amount,
+            func.coalesce(func.sum(models.Movement.amount), 0.0).label("spent_amount"),
+        )
+        .join(models.Category, models.Category.id == models.Budget.category_id)
+        .outerjoin(
+            models.Movement,
+            (models.Movement.category_id == models.Budget.category_id)
+            & (models.Movement.movement_type == "expense")
+            & (extract("year", models.Movement.movement_date) == year)
+            & (extract("month", models.Movement.movement_date) == month),
+        )
+        .filter(models.Budget.year == year, models.Budget.month == month)
+        .group_by(models.Budget.category_id, models.Category.name, models.Budget.limit_amount)
+        .all()
+    )
+
+    alerts = []
+    for row in rows:
+        usage = (float(row.spent_amount) / float(row.limit_amount)) * 100 if row.limit_amount else 0
+        level = "ok"
+        if usage >= 100:
+            level = "critical"
+        elif usage >= 80:
+            level = "warning"
+
+        alerts.append(
+            {
+                "category_id": row.category_id,
+                "category_name": row.category_name,
+                "limit_amount": float(row.limit_amount),
+                "spent_amount": float(row.spent_amount),
+                "usage_pct": round(usage, 2),
+                "level": level,
+            }
+        )
+    return alerts
+
+
