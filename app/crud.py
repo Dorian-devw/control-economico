@@ -121,3 +121,19 @@ def monthly_summary(db: Session, year: int, month: int):
         "balance": float(income - expense),
         "generated_at": date.today().isoformat(),
     }
+
+
+def find_duplicate_movement(db: Session, movement: schemas.MovementCreate):
+    normalized_note = (movement.note or "").strip()
+    return (
+        db.query(models.Movement)
+        .filter(
+            models.Movement.movement_date == movement.movement_date,
+            models.Movement.amount == movement.amount,
+            models.Movement.movement_type == movement.movement_type,
+            models.Movement.payment_method == movement.payment_method,
+            models.Movement.category_id == movement.category_id,
+            func.coalesce(models.Movement.note, "") == normalized_note,
+        )
+        .first()
+    )
