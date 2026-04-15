@@ -182,3 +182,21 @@ def get_budget_alerts(db: Session, year: int, month: int):
     return alerts
 
 
+def create_audit_log(
+    db: Session,
+    action: str,
+    entity: str,
+    entity_id: int | None = None,
+    detail: str | None = None,
+):
+    model = models.AuditLog(
+        action=action,
+        entity=entity,
+        entity_id=entity_id,
+        detail=detail,
+    )
+    db.add(model)
+    db.commit()
+    db.refresh(model)
+    return model
+
