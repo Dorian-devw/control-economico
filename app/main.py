@@ -99,4 +99,10 @@ def get_audit_logs(limit: int = 50, db: Session = Depends(get_db)):
 @app.post("/reports/monthly")
 def generate_monthly_report(year: int, month: int, db: Session = Depends(get_db)):
     report_file = export_monthly_report(db, year, month)
+    crud.create_audit_log(
+        db,
+        action="generate",
+        entity="monthly_report",
+        detail=f"Reporte generado: year={year}, month={month:02}, file={report_file}",
+    )
     return {"message": "Reporte generado", "file": report_file}
