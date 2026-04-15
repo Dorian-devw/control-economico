@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from pydantic import BaseModel, Field
 
@@ -54,6 +54,27 @@ class SavingsGoalCreate(BaseModel):
 
 class SavingsGoalOut(SavingsGoalCreate):
     id: int
+
+    class Config:
+        from_attributes = True
+
+
+class BudgetAlert(BaseModel):
+    category_id: int
+    category_name: str
+    limit_amount: float
+    spent_amount: float
+    usage_pct: float
+    level: str
+
+
+class AuditLogOut(BaseModel):
+    id: int
+    action: str
+    entity: str
+    entity_id: int | None = None
+    detail: str | None = None
+    created_at: datetime
 
     class Config:
         from_attributes = True
